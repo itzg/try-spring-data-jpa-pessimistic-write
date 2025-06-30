@@ -12,20 +12,15 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collector;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Import(TestcontainersConfiguration.class)
 @SpringBootTest
-class TrySpringDataJpaLiquibaseDecimalApplicationTests {
+class ApplicationTests {
 
     @Autowired
     private AccountService accountService;
-
-    @Test
-    void contextLoads() {
-    }
 
     @ParameterizedTest
     @ValueSource(ints = { 1, 10})
@@ -57,11 +52,7 @@ class TrySpringDataJpaLiquibaseDecimalApplicationTests {
             expectedBalance = expectedBalance.add(amount.multiply(BigDecimal.valueOf(repetitions)));
         }
 
-        System.out.println("expected balance is " + expectedBalance);
-
-        System.out.println("getting account");
         final Account result = accountService.get(account.getId());
         assertThat(result.getBalance()).isEqualTo(expectedBalance);
-
     }
 }

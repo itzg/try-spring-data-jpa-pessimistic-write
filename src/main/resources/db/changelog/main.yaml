@@ -2,19 +2,19 @@ databaseChangeLog:
   - changeSet:
       id: 1751320906310-1
       author: geoff
-      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
       changes:
         - createTable:
             columns:
               - column:
                   constraints:
-                    nullable: false
                     primaryKey: true
-                    primaryKeyName: pk_account
                   name: id
                   type: BIGINT
+                  autoIncrement: true
               - column:
                   name: balance
-                  type: DECIMAL
+                  type: DECIMAL(8,2)
+                  constraints:
+                    nullable: false
             tableName: account
 
