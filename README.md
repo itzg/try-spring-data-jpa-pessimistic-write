@@ -8,6 +8,32 @@ It implements the classic and naive bank account balance scenario to simulate th
 2. Adding a deposit amount to the account's balance
 3. Saving the entity back to the database
 
+There are two parts to correctly handling the locking of the entities to increment:
+
+[The service method](src/main/java/me/itzg/app/AccountService.java) is wrapped in a transaction scope:
+
+```java
+@Transactional
+public Account deposit(long id, BigDecimal amount) {
+    final Account account = accountRepository.findAccountById(id).orElseThrow();
+    account.setBalance(
+        account.getBalance()
+            .add(amount)
+    );
+    return accountRepository.save(account);
+}
+```
+
+...and [the repository](src/main/java/me/itzg/app/db/AccountRepository.java) method is designated as the pessimistic-write lock:
+
+```java
+public interface AccountRepository extends CrudRepository<Account, Long> {
+    
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Optional<Account> findAccountById(long id);
+}
+```
+
 ## Running test
 
 The unit test in `me.itzg.app.ApplicationTests` runs with a single thread and then with multiple threads to demonstrate that the lock prevents concurrent deposit-writes to the account balance.

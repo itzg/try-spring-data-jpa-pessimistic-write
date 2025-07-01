@@ -7,6 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.Optional;
 
 public interface AccountRepository extends CrudRepository<Account, Long> {
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<Account> findAccountById(long id);
 }

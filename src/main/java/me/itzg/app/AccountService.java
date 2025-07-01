@@ -30,7 +30,10 @@ public class AccountService {
     @Transactional
     public Account deposit(long id, BigDecimal amount) {
         final Account account = accountRepository.findAccountById(id).orElseThrow();
-        account.setBalance(account.getBalance().add(amount));
+        account.setBalance(
+            account.getBalance()
+                .add(amount)
+        );
         return accountRepository.save(account);
     }
 }
