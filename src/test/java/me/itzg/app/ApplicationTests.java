@@ -1,7 +1,6 @@
 package me.itzg.app;
 
 import me.itzg.app.db.Account;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +22,18 @@ class ApplicationTests {
     private AccountService accountService;
 
     @ParameterizedTest
-    @ValueSource(ints = { 1, 10})
-    void concurrentProblems(int nThreads) {
+    @ValueSource(ints = { 1, 2, 10})
+    void concurrencyIsFineWithLocking(int nThreads) {
+        runDepositsTest(nThreads, true);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = { 1, 2, 10})
+    void concurrencyBreaksWithoutLocking(int nThreads) {
+        runDepositsTest(nThreads, false);
+    }
+
+    private void runDepositsTest(int nThreads, boolean useLocking) {
         final Account account = accountService.create();
 
         final int repetitions = 100;
@@ -39,7 +48,7 @@ class ApplicationTests {
             for (int i = 0; i < repetitions; i++) {
                 for (BigDecimal amount : amounts) {
                     executorService.submit(() -> {
-                        accountService.deposit(account.getId(), amount);
+                        accountService.deposit(account.getId(), amount, useLocking);
                     });
                 }
             }

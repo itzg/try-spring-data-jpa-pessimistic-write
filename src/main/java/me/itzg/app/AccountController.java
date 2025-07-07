@@ -27,6 +27,6 @@ public class AccountController {
 
     @PostMapping("{id}/_deposit")
     public Account deposit(@PathVariable long id, @RequestParam BigDecimal amount) {
-        return accountService.deposit(id, amount);
+        return accountService.deposit(id, amount, true);
     }
 }

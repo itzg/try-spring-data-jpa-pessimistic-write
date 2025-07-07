@@ -24,6 +24,8 @@ public Account deposit(long id, BigDecimal amount) {
 }
 ```
 
+_The code snippet here is simplified for clarity. The actual deposit method accepts a `boolean useLock` to exercise test scenarios._
+
 ...and [the repository](src/main/java/me/itzg/app/db/AccountRepository.java) method is designated as the pessimistic-write lock:
 
 ```java
@@ -34,11 +36,11 @@ public interface AccountRepository extends CrudRepository<Account, Long> {
 }
 ```
 
-## Running test
+## Running tests
 
-The unit test in `me.itzg.app.ApplicationTests` runs with a single thread and then with multiple threads to demonstrate that the lock prevents concurrent deposit-writes to the account balance.
+The unit tests in `me.itzg.app.ApplicationTests` run the same scenario with and without using a lock along with 1, 2, and 10 threads. Without the lock and two or more concurrent read-change-write's it demonstrates that the account balance gets corrupted by concurrent changes to the account row.
 
-If you were to remove the `@Lock` from the method `me.itzg.app.db.AccountRepository.findAccountById` then the test will fail in the multi-threaded case.
+![test results](docs/test-results.png)
 
 ## Running manually
 

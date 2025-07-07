@@ -1,6 +1,7 @@
 package me.itzg.app;
 
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import me.itzg.app.db.Account;
 import me.itzg.app.db.AccountRepository;
 import org.springframework.stereotype.Service;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 
 @Service
+@Slf4j
 public class AccountService {
 
     private final AccountRepository accountRepository;
@@ -28,8 +30,16 @@ public class AccountService {
     }
 
     @Transactional
-    public Account deposit(long id, BigDecimal amount) {
-        final Account account = accountRepository.findAccountById(id).orElseThrow();
+    public Account deposit(long id, BigDecimal amount, boolean useLocking) {
+        final Account account;
+        if (useLocking) {
+            // this one uses @Lock
+            account = accountRepository.findAccountById(id).orElseThrow();
+        }
+        else {
+            // standard CrudRepository findById doesn't include the @Lock
+            account = accountRepository.findById(id).orElseThrow();
+        }
         account.setBalance(
             account.getBalance()
                 .add(amount)
